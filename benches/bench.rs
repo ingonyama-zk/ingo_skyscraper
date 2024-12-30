@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use mont_square::*;
+use ingo_skyscrapper::*;
 
 
 // Benchmark function
@@ -13,6 +13,7 @@ fn benchmark_sqrs(c: &mut Criterion) {
     c.bench_function("sqr_cios_ord_unr", |b| b.iter(|| sqr_cios_ord_unr(black_box(input))));
     c.bench_function("sqr_cios_opt_unr_2", |b| b.iter(|| sqr_cios_opt_unr_2(black_box(input))));
     c.bench_function("sqr_cios_opt_unr_1", |b| b.iter(|| sqr_cios_opt_unr_1(black_box(input))));
+    c.bench_function("mul_cios_opt_unr_1", |b| b.iter(|| mul_cios_opt_unr_1(black_box(input), black_box(input))));
 }
 
 criterion_group!(benches, benchmark_sqrs);
