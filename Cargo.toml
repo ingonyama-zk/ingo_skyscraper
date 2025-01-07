@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 rand = "0.8"
+primitive-types = "0.12"
 
 [dev-dependencies]
 criterion = "0.4"
