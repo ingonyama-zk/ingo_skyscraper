@@ -7,6 +7,10 @@ edition = "2024"
 rand = "0.8"
 primitive-types = "0.12"
 
+[profile.release]
+debug = true
+lto = false
+
 [dev-dependencies]
 criterion = "0.4"
 
