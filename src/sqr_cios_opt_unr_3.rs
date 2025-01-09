@@ -2,7 +2,7 @@ use crate::constants::*;
 
 
 #[inline]
-pub fn sqr_cios_opt_unr_2_tweaked(a: [u64; 4]) -> [u64; 4] {
+pub fn sqr_cios_opt_unr_3(a: [u64; 4]) -> [u64; 4] {
     let p = U64_P;
     let mu0 = U64_MU0;
 

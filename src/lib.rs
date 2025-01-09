@@ -15,8 +15,8 @@ pub use sqr_cios_opt_unr_1::*;
 mod sqr_cios_opt_unr_2;
 pub use sqr_cios_opt_unr_2::*;
 
-mod sqr_cios_opt_unr_2_tweaked;
-pub use sqr_cios_opt_unr_2_tweaked::*;
+mod sqr_cios_opt_unr_3;
+pub use sqr_cios_opt_unr_3::*;
 
 mod mul_cios_opt_unr_1;
 pub use mul_cios_opt_unr_1::*;
@@ -175,7 +175,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bar_dynamics() { // this test needs to fail
+    fn test_bar_dynamics_should_fail() { // this test needs to fail
         for _ in 0..100 {
             let x = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let y = bar_u8(x);

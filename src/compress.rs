@@ -6,18 +6,18 @@ use crate::bar::*;
 
 
 pub fn compress(l: [u64; 4], r: [u64; 4]) -> [u64; 4] {
-    let sqr_fun = |x| -> [u64; 4] { sqr_cios_opt_unr_2(x) };
+    let sqr0 = |x| -> [u64; 4] { sqr_cios_opt_unr_2(x) };
     let a = l;
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
     // stage 0
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
     let (l, r) = (wrapping_add(r, sqr), l);
     debug_assert!(overflowing_sub(l, U64_3P).1); // assert \in[2P]
     debug_assert!(overflowing_sub(r, U64_P).1);  // assert \in[0P]
     // stage 1
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P] - SHOULD BE [2P]?
     let (l, r) = (x0p_plus_sqr1p_plus_rc_eq0p(r, sqr, 0), l);
     debug_assert!(overflowing_sub(l, U64_P).1);  // assert \in[0P]
@@ -33,14 +33,14 @@ pub fn compress(l: [u64; 4], r: [u64; 4]) -> [u64; 4] {
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
     // stage 4
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
     let (l, r) = (x0p_plus_sqr1p_plus_rc_eq0p(r, sqr, 3), l);
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
 
     // stage 5
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
     let (l, r) = (x0p_plus_sqr1p_plus_rc_eq0p(r, sqr, 4), l);
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
@@ -56,13 +56,13 @@ pub fn compress(l: [u64; 4], r: [u64; 4]) -> [u64; 4] {
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
     // stage 8
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
     let (l, r) = (x0p_plus_sqr1p_plus_rc_eq0p(r, sqr, 7), l);
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
     // stage 9
-    let sqr = sqr_fun(l);
+    let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
     x0p_plus_sqr1p_plus_y0p_eq0p(r, sqr, a)
 }
@@ -94,6 +94,21 @@ pub fn x0p_plus_sqr1p_plus_rc_eq0p(x: [u64; 4], sqr: [u64; 4], rc_idx: usize) ->
         debug_assert!(overflowing_sub(tmp, U64_3P).1); // assert \in[2P]
         // reduce to [0P]
         return reduce_2p(tmp);
+    }
+}
+
+pub fn x0p_plus_sqr1p_plus_rc_eq2p(x: [u64; 4], sqr: [u64; 4], rc_idx: usize) -> [u64; 4] {
+    debug_assert!(overflowing_sub(x, U64_P).1);    // assert \in[0P]
+    debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
+    let x_plus_sqr = wrapping_add(x, sqr);   // x+sqr \in[2P]
+    debug_assert!(overflowing_sub(x_plus_sqr, U64_3P).1); // assert \in[2P]
+    let (tmp, b) = overflowing_sub(x_plus_sqr, _1P_MINUS_RC[rc_idx]); // x+sqr+rc \in [2P], if not underflow
+    if b { // underflow
+        // guaranteed to be [0P]
+        return wrapping_add(x_plus_sqr, RC[rc_idx]);
+    } else { // [2P]
+        debug_assert!(overflowing_sub(tmp, U64_3P).1); // assert \in[2P]
+        tmp
     }
 }
 
