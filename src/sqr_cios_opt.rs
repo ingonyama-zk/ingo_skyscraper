@@ -14,7 +14,7 @@ pub fn sqr_cios_opt(a: [u64; 4]) -> [u64; 4] {
 
     for i in 0..4 {
         // case j = 0
-        // (result[0], carry_2) = carrying_mul_add(a[0], a[i], result[0], 0);
+        // (res[0], car2) = carrying_mul_add(a[0], a[i], res[0], 0);
         if i == 0 {
             (res[0], car2) = carrying_mul_add_slim(a[0], a[i], res[0]);
         } else {
@@ -24,7 +24,7 @@ pub fn sqr_cios_opt(a: [u64; 4]) -> [u64; 4] {
         let m = res[0].wrapping_mul(mu0);
 
         (_, car1) = carrying_mul_add(m, p[0], res[0], 0);
-        // carry_1 = carrying_mul_true(m, modulus[0]); // doesn't work for edge cases like when a==0 or one of the digits is 2**32 etc.
+        // car1 = carrying_mul_true(m, modulus[0]); // doesn't work for edge cases like when a==0 or one of the digits is 2**32 etc.
 
         // case j = 1, ..., 4 - 1
         for j in 1..4 {
@@ -37,19 +37,19 @@ pub fn sqr_cios_opt(a: [u64; 4]) -> [u64; 4] {
                 // Lower half of matrix: no mult, only add
                 temp_mult = mem[calc_index(j, i)];
             }
-            let mut temp_result = 0u128;
+            let mut temp_res = 0u128;
             
-            // temp_result = temp_mult.wrapping_add(result[j] as u128).wrapping_add(carry_2 as u128);
+            // temp_res = temp_mult.wrapping_add(res[j] as u128).wrapping_add(car2 as u128);
             if i == 0// || ((i == 4 - 1) && (j == 4 - 1)) // this only works for inputs < p
             {
-                let temp_add = (res[j]).wrapping_add(car2);
-                temp_result = temp_mult.wrapping_add(temp_add as u128);
+                let temp_add = res[j].wrapping_add(car2);
+                temp_res = temp_mult.wrapping_add(temp_add as u128);
             } else {
                 let temp_add = (res[j] as u128).wrapping_add(car2 as u128);
-                temp_result = temp_mult.wrapping_add(temp_add);
+                temp_res = temp_mult.wrapping_add(temp_add);
             }
-            res[j] = temp_result as u64;
-            car2 = (temp_result >> 64) as u64;
+            res[j] = temp_res as u64;
+            car2 = (temp_res >> 64) as u64;
 
             (res[j - 1], car1) = carrying_mul_add(m, p[j], res[j], car1);
         }

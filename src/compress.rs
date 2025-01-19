@@ -38,7 +38,6 @@ pub fn compress(l: [u64; 4], r: [u64; 4]) -> [u64; 4] {
     let (l, r) = (x0p_plus_sqr1p_plus_rc_eq0p(r, sqr, 3), l);
     debug_assert!(overflowing_sub(l, U64_P).1); // assert \in[0P]
     debug_assert!(overflowing_sub(r, U64_P).1); // assert \in[0P]
-
     // stage 5
     let sqr = sqr0(l);
     debug_assert!(overflowing_sub(sqr, U64_2P).1); // assert \in[1P]
