@@ -18,6 +18,9 @@ pub use sqr_cios_opt_unr_2::*;
 mod sqr_cios_opt_unr_3;
 pub use sqr_cios_opt_unr_3::*;
 
+mod mul_cios_opt;
+pub use mul_cios_opt::*;
+
 mod mul_cios_opt_unr_1;
 pub use mul_cios_opt_unr_1::*;
 
@@ -48,7 +51,16 @@ mod tests {
         unsafe { std::mem::transmute::<U256, [u64; 4]>(x) }
     }
 
-    fn calc_ref(x: [u64; 4]) -> [u64; 4] {
+    fn calc_mul_ref(x: [u64; 4], y: [u64; 4]) -> [u64; 4] {
+        let x_u256 = unsafe { std::mem::transmute::<[u64; 4], U256>(x) } % (U256_P << 2);
+        let y_u256 = unsafe { std::mem::transmute::<[u64; 4], U256>(y) } % (U256_P << 2);
+        let tmp = unsafe { std::mem::transmute::<U512, [u64; 8]>(x_u256.full_mul(y_u256) % U512_P) };
+        let tmp = unsafe { std::mem::transmute::<[u64; 4], U256>([tmp[0], tmp[1], tmp[2], tmp[3]]) };
+        let tmp = unsafe { std::mem::transmute::<U512, [u64; 8]>(tmp.full_mul(U256_INVR) % U512_P) };
+        [tmp[0], tmp[1], tmp[2], tmp[3]]
+    }
+
+    fn calc_sqr_ref(x: [u64; 4]) -> [u64; 4] {
         let x_u256 = unsafe { std::mem::transmute::<[u64; 4], U256>(x) } % (U256_P << 2);
         let tmp = unsafe { std::mem::transmute::<U512, [u64; 8]>(x_u256.full_mul(x_u256) % U512_P) };
         let tmp = unsafe { std::mem::transmute::<[u64; 4], U256>([tmp[0], tmp[1], tmp[2], tmp[3]]) };
@@ -83,6 +95,43 @@ mod tests {
     
 
     #[test]
+    fn test_mul() {
+        let mul = |x, y| -> [u64; 4] { mul_cios_opt(x, y) };
+        // zero
+        assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
+        // +3p rand -> +4p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            assert_eq!(tmp, mod_5p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+        // +2p rand -> +2p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            assert_eq!(tmp, mod_3p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+        // +1p rand -> +1p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            assert_eq!(tmp, mod_2p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+    }
+
+    #[test]
     fn test_sqr() {
         let sqr = |x| -> [u64; 4] { sqr_cios_opt_unr_2(x) };
         // zero
@@ -90,7 +139,7 @@ mod tests {
         // +3p rand -> +4p
         for _ in 0..1000000 {
             let x: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
-            let ref_ = calc_ref(x);
+            let ref_ = calc_sqr_ref(x);
             let tmp = sqr(x);
             assert_eq!(tmp, mod_5p(tmp));
             let res_ = mod_p(tmp);
@@ -99,7 +148,7 @@ mod tests {
         // +2p rand -> +2p
         for _ in 0..1000000 {
             let x: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
-            let ref_ = calc_ref(x);
+            let ref_ = calc_sqr_ref(x);
             let tmp = sqr(x);
             assert_eq!(tmp, mod_3p(tmp));
             let res_ = mod_p(tmp);
@@ -108,7 +157,7 @@ mod tests {
         // +1p rand -> +1p
         for _ in 0..1000000 {
             let x: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
-            let ref_ = calc_ref(x);
+            let ref_ = calc_sqr_ref(x);
             let tmp = sqr(x);
             assert_eq!(tmp, mod_2p(tmp));
             let res_ = mod_p(tmp);
@@ -118,7 +167,7 @@ mod tests {
         let mut x = U64_3P;
         x[0] = 0u64;
         for _ in 0..100000 {
-            let ref_ = calc_ref(x);
+            let ref_ = calc_sqr_ref(x);
             x = sqr(x);
             assert_eq!(x, mod_2p(x));
             let res_ = mod_p(x);
@@ -128,7 +177,7 @@ mod tests {
         let mut x = U64_4P;
         x[0] = rand::random::<u64>();
         for _ in 0..100000 {
-            let ref_ = calc_ref(x);
+            let ref_ = calc_sqr_ref(x);
             x = sqr(x);
             assert_eq!(x, mod_4p(x));
             let res_ = mod_p(x);
@@ -175,7 +224,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bar_dynamics_should_fail() { // this test needs to fail
+    #[should_panic]
+    fn test_bar_dynamics_should_fail() { // this test needs to always fail
         for _ in 0..100 {
             let x = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let y = bar_u8(x);
