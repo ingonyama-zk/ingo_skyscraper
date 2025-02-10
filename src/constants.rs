@@ -3,8 +3,16 @@ pub const U64_2P: [u64; 4] = [0x87c3eb27e0000002, 0x5067d090f372e122, 0x70a08b6d
 pub const U64_3P: [u64; 4] = [0xcba5e0bbd0000003, 0x789bb8d96d2c51b3, 0x28f0d12384840917, 0x912ceb58a394e07d];
 pub const U64_4P: [u64; 4] = [0x0f87d64fc0000004, 0xa0cfa121e6e5c245, 0xe14116da06056174, 0xc19139cb84c680a6];
 pub const U64_5P: [u64; 4] = [0x5369cbe3b0000005, 0xc903896a609f32d6, 0x99915c908786b9d1, 0xf1f5883e65f820d0];
-
 pub const U64_MU0: u64 = 0xc2e1f593efffffff;
+
+pub const U56_P: [u64; 5] = [0xe1f593f0000001, 0xe84879b9709143, 0xb68181585d2833, 0xe131a029b85045, 0x30644e72];
+pub const U56_MU0: u64 = 0xe1f593efffffff;
+pub const U32_MU0: u32 = 0xefffffff;
+
+pub const U63_P: [u64; 5] = [0x43e1f593f0000001, 0x5067d090f372e122, 0x614116da06056174, 0x3227397098d014d, 0x3];
+pub const U63_MU0: u64 = 0x42e1f593efffffff;
+pub const U4_MU0: u64 = 0xf;
+
 pub const U128_INVR: [u128; 2] = [0x090ef5a9e111ec87dc5ba0056db1194e, 0x15ebf95182c5551cc8260de4aeb85d5d];
 
 pub const RC: [[u64; 4]; 8] = [[0x903c4324270bd744, 0x873125f708a7d269, 0x081dd27906c83855, 0x276b1823ea6d7667],

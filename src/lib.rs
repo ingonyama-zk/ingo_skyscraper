@@ -24,6 +24,9 @@ pub use mul_cios_opt::*;
 mod mul_cios_opt_unr_1;
 pub use mul_cios_opt_unr_1::*;
 
+mod mul_vmp_cols;
+pub use mul_vmp_cols::*;
+
 mod sqr_cios_ord_unr;
 pub use sqr_cios_ord_unr::*;
 
@@ -126,6 +129,22 @@ mod tests {
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
             assert_eq!(tmp, mod_2p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+    }
+
+    #[test]
+    fn test_mul_vmp() {
+        let mul = |x, y| -> [u64; 4] { mul_vmp_cols(x, y) };
+        // zero
+        assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
+        //
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
         }

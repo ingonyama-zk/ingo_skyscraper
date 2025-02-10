@@ -13,6 +13,7 @@ fn benchmark(c: &mut Criterion) {
     // c.bench_function("sqr_cios_opt_unr_2", |b| b.iter(|| sqr_cios_opt_unr_2(black_box(x))));
     // c.bench_function("sqr_cios_opt_unr_2_tweaked", |b| b.iter(|| sqr_cios_opt_unr_2_tweaked(black_box(x))));
     c.bench_function("mul_cios_opt", |b| b.iter(|| mul_cios_opt(black_box(x), black_box(y))));
+    c.bench_function("mul_vmp_cols", |b| b.iter(|| mul_vmp_cols(black_box(x), black_box(y))));
     // c.bench_function("mul_cios_opt_unr_1", |b| b.iter(|| mul_cios_opt_unr_1(black_box(input), black_box(input2))));
     // c.bench_function("bar_u8", |b| b.iter(|| bar_u8(black_box(x))));
     // c.bench_function("arith_sub", |b| b.iter(|| overflowing_sub(black_box(x), black_box(y))));
