@@ -2,7 +2,7 @@ use crate::constants::*;
 
 
 #[inline]
-pub fn mul_vmp_cols(_a: [u64; 4], _b: [u64; 4]) -> [u64; 4] {
+pub fn mul_vmp_cols_u56(_a: [u64; 4], _b: [u64; 4]) -> [u64; 4] {
     const N: usize = 5;
     let b56 = 0xffffffffffffff;
     let a = [_a[0] & b56, ((_a[1] << 8) | (_a[0] >> 56)) & b56, ((_a[2] << 16) | (_a[1] >> 48)) & b56, ((_a[3] << 24) | (_a[2] >> 40)) & b56, _a[3] >> 32];

@@ -21,9 +21,9 @@ pub fn mul_cios_opt(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
         let m = res[0].wrapping_mul(mu0);
 
         (_, car1) = carrying_mul_add(m, p[0], res[0], 0);
-        // car1 = carrying_mul_true(m, modulus[0]); // doesn't work for edge cases like when a==0 or one of the digits is 2**32 etc.
+        // car1 = carrying_mul_true(m, p[0], res[0] != 0); // doesn't work for edge cases like when a==0 or one of the digits is 2**32 etc.
 
-        // case j = 1, ..., 4 - 1
+        // case j = 1, ..., 3
         for j in 1..4 {
             let temp_mult = (a[j] as u128).wrapping_mul(b[i] as u128);
             
@@ -43,7 +43,7 @@ pub fn mul_cios_opt(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
             (res[j - 1], car1) = carrying_mul_add(m, p[j], res[j], car1);
         }
 
-        (res[4 - 1], _) = car1.overflowing_add(car2);
+        res[3] = car1.wrapping_add(car2);
     }
     res
 }
@@ -66,8 +66,11 @@ const fn carrying_mul_add_slim(lhs: u64, rhs: u64, add: u64) -> (u64, u64) {
 }
 
 #[inline]
-const fn carrying_mul_true(lhs: u64, rhs: u64) -> u64 {
+const fn carrying_mul_true(lhs: u64, rhs: u64, cond: bool) -> u64 {
     let wide = (lhs as u128).wrapping_mul(rhs as u128);
-    let carry = ((wide >> 64) as u64).wrapping_add(1);
-    carry
+    if cond == true {
+        return ((wide >> 64) as u64).wrapping_add(1);
+    } else {
+        return (wide >> 64) as u64;
+    }
 }

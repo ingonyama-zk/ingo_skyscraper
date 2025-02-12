@@ -24,8 +24,11 @@ pub use mul_cios_opt::*;
 mod mul_cios_opt_unr_1;
 pub use mul_cios_opt_unr_1::*;
 
-mod mul_vmp_cols;
-pub use mul_vmp_cols::*;
+mod mul_vmp_cols_u56;
+pub use mul_vmp_cols_u56::*;
+
+mod mul_vmp_cols_u63;
+pub use mul_vmp_cols_u63::*;
 
 mod sqr_cios_ord_unr;
 pub use sqr_cios_ord_unr::*;
@@ -98,7 +101,7 @@ mod tests {
     
 
     #[test]
-    fn test_mul() {
+    fn test_mul_mp() {
         let mul = |x, y| -> [u64; 4] { mul_cios_opt(x, y) };
         // zero
         assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
@@ -136,15 +139,19 @@ mod tests {
 
     #[test]
     fn test_mul_vmp() {
-        let mul = |x, y| -> [u64; 4] { mul_vmp_cols(x, y) };
         // zero
-        assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
-        //
+        assert_eq!([0u64; 4], mul_vmp_cols_u56([0u64; 4], [0u64; 4]));
+        // random
         for _ in 0..1000000 {
             let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            // let x: [u64; 4] = [4314579465281859110, 17308915295999424822, 15701475505873744816, 2110239463959784388];
+            // let y: [u64; 4] = [10903258641024617257, 8261737863103264858, 1924667411561346609, 2877263876851522103];
             let ref_ = calc_mul_ref(x, y);
-            let tmp = mul(x, y);
+            let tmp = mul_vmp_cols_u56(x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+            let tmp = mul_vmp_cols_u63(x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
         }

@@ -11,7 +11,6 @@ pub const U32_MU0: u32 = 0xefffffff;
 
 pub const U63_P: [u64; 5] = [0x43e1f593f0000001, 0x5067d090f372e122, 0x614116da06056174, 0x3227397098d014d, 0x3];
 pub const U63_MU0: u64 = 0x42e1f593efffffff;
-pub const U4_MU0: u64 = 0xf;
 
 pub const U128_INVR: [u128; 2] = [0x090ef5a9e111ec87dc5ba0056db1194e, 0x15ebf95182c5551cc8260de4aeb85d5d];
 
