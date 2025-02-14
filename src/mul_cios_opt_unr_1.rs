@@ -32,100 +32,81 @@ pub fn mul_cios_opt_unr_1(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
     let m2 = (m as u128).wrapping_mul(U64_P[2] as u128);
     let m3 = (m as u128).wrapping_mul(U64_P[3] as u128);
     // accumulate
-    let tmp = a01.wrapping_add(car2 as u128);
-    (res[1], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a02.wrapping_add(car2 as u128);
-    (res[2], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a03.wrapping_add(car2 as u128);
-    (res[3], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[1], car2) = wadd_1(a01, car2);
+    (res[2], car2) = wadd_1(a02, car2);
+    (res[3], car2) = wadd_1(a03, car2);
     // reduce
-    let tmp = res[0] != 0;
-    car1 = ((m0 >> 64) as u64).wrapping_add(tmp as u64);
-    let tmp = m1.wrapping_add(res[1] as u128).wrapping_add(car1 as u128);
-    (res[0], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m2.wrapping_add(res[2] as u128).wrapping_add(car1 as u128);
-    (res[1], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m3.wrapping_add(res[3] as u128).wrapping_add(car1 as u128);
-    (res[2], car1) = (tmp as u64, (tmp >> 64) as u64);
+    car1 = ((m0 >> 64) as u64).wrapping_add((res[0] != 0) as u64);
+    (res[0], car1) = wadd_2(m1, res[1], car1);
+    (res[1], car1) = wadd_2(m2, res[2], car1);
+    (res[2], car1) = wadd_2(m3, res[3], car1);
     res[3] = car1.wrapping_add(car2);
 
     // step 1
-    let tmp = a10.wrapping_add(res[0] as u128);
-    (res[0], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[0], car2) = wadd_1(a10, res[0]);
     let m = res[0].wrapping_mul(U64_MU0);
     let m0 = (m as u128).wrapping_mul(U64_P[0] as u128);
     let m1 = (m as u128).wrapping_mul(U64_P[1] as u128);
     let m2 = (m as u128).wrapping_mul(U64_P[2] as u128);
     let m3 = (m as u128).wrapping_mul(U64_P[3] as u128);
     // accumulate
-    let tmp = a11.wrapping_add(res[1] as u128).wrapping_add(car2 as u128);
-    (res[1], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a12.wrapping_add(res[2] as u128).wrapping_add(car2 as u128);
-    (res[2], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a13.wrapping_add(res[3] as u128).wrapping_add(car2 as u128);
-    (res[3], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[1], car2) = wadd_2(a11, res[1], car2);
+    (res[2], car2) = wadd_2(a12, res[2], car2);
+    (res[3], car2) = wadd_2(a13, res[3], car2);
     // reduce
-    let tmp = res[0] != 0;
-    car1 = ((m0 >> 64) as u64).wrapping_add(tmp as u64);
-    let tmp = m1.wrapping_add(res[1] as u128).wrapping_add(car1 as u128);
-    (res[0], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m2.wrapping_add(res[2] as u128).wrapping_add(car1 as u128);
-    (res[1], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m3.wrapping_add(res[3] as u128).wrapping_add(car1 as u128);
-    (res[2], car1) = (tmp as u64, (tmp >> 64) as u64);
+    car1 = ((m0 >> 64) as u64).wrapping_add((res[0] != 0) as u64);
+    (res[0], car1) = wadd_2(m1, res[1], car1);
+    (res[1], car1) = wadd_2(m2, res[2], car1);
+    (res[2], car1) = wadd_2(m3, res[3], car1);
     res[3] = car1.wrapping_add(car2);
 
     // step 2
-    let tmp = a20.wrapping_add(res[0] as u128);
-    (res[0], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[0], car2) = wadd_1(a20, res[0]);
     let m = res[0].wrapping_mul(U64_MU0);
     let m0 = (m as u128).wrapping_mul(U64_P[0] as u128);
     let m1 = (m as u128).wrapping_mul(U64_P[1] as u128);
     let m2 = (m as u128).wrapping_mul(U64_P[2] as u128);
     let m3 = (m as u128).wrapping_mul(U64_P[3] as u128);
     // accumulate
-    let tmp = a21.wrapping_add(res[1] as u128).wrapping_add(car2 as u128);
-    (res[1], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a22.wrapping_add(res[2] as u128).wrapping_add(car2 as u128);
-    (res[2], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a23.wrapping_add(res[3] as u128).wrapping_add(car2 as u128);
-    (res[3], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[1], car2) = wadd_2(a21, res[1], car2);
+    (res[2], car2) = wadd_2(a22, res[2], car2);
+    (res[3], car2) = wadd_2(a23, res[3], car2);
     // reduce
-    let tmp = res[0] != 0;
-    car1 = ((m0 >> 64) as u64).wrapping_add(tmp as u64);
-    let tmp = m1.wrapping_add(res[1] as u128).wrapping_add(car1 as u128);
-    (res[0], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m2.wrapping_add(res[2] as u128).wrapping_add(car1 as u128);
-    (res[1], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m3.wrapping_add(res[3] as u128).wrapping_add(car1 as u128);
-    (res[2], car1) = (tmp as u64, (tmp >> 64) as u64);
+    car1 = ((m0 >> 64) as u64).wrapping_add((res[0] != 0) as u64);
+    (res[0], car1) = wadd_2(m1, res[1], car1);
+    (res[1], car1) = wadd_2(m2, res[2], car1);
+    (res[2], car1) = wadd_2(m3, res[3], car1);
     res[3] = car1.wrapping_add(car2);
 
     // step 3
-    let tmp = a30.wrapping_add(res[0] as u128);
-    (res[0], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[0], car2) = wadd_1(a30, res[0]);
     let m = res[0].wrapping_mul(U64_MU0);
     let m0 = (m as u128).wrapping_mul(U64_P[0] as u128);
     let m1 = (m as u128).wrapping_mul(U64_P[1] as u128);
     let m2 = (m as u128).wrapping_mul(U64_P[2] as u128);
     let m3 = (m as u128).wrapping_mul(U64_P[3] as u128);
     // accumulate
-    let tmp = a31.wrapping_add(res[1] as u128).wrapping_add(car2 as u128);
-    (res[1], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a32.wrapping_add(res[2] as u128).wrapping_add(car2 as u128);
-    (res[2], car2) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = a33.wrapping_add(res[3] as u128).wrapping_add(car2 as u128);
-    (res[3], car2) = (tmp as u64, (tmp >> 64) as u64);
+    (res[1], car2) = wadd_2(a31, res[1], car2);
+    (res[2], car2) = wadd_2(a32, res[2], car2);
+    (res[3], car2) = wadd_2(a33, res[3], car2);
     // reduce
-    let tmp = res[0] != 0;
-    car1 = ((m0 >>64) as u64).wrapping_add(tmp as u64);
-    let tmp = m1.wrapping_add(res[1] as u128).wrapping_add(car1 as u128);
-    (res[0], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m2.wrapping_add(res[2] as u128).wrapping_add(car1 as u128);
-    (res[1], car1) = (tmp as u64, (tmp >> 64) as u64);
-    let tmp = m3.wrapping_add(res[3] as u128).wrapping_add(car1 as u128);
-    (res[2], car1) = (tmp as u64, (tmp >> 64) as u64);
+    car1 = ((m0 >> 64) as u64).wrapping_add((res[0] != 0) as u64);
+    (res[0], car1) = wadd_2(m1, res[1], car1);
+    (res[1], car1) = wadd_2(m2, res[2], car1);
+    (res[2], car1) = wadd_2(m3, res[3], car1);
     res[3] = car1.wrapping_add(car2);
 
     res
+}
+
+#[inline]
+fn wadd_1(w: u128, a: u64) -> (u64, u64) {
+    let tmp = w.wrapping_add(a as u128);
+    (tmp as u64, (tmp >> 64) as u64)
+}
+
+#[inline]
+fn wadd_2(w: u128, a: u64, b: u64) -> (u64, u64) {
+    let tmp = w.wrapping_add(a as u128).wrapping_add(b as u128);
+    (tmp as u64, (tmp >> 64) as u64)
 }
