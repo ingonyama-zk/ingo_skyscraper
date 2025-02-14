@@ -4,6 +4,8 @@ pub const U64_3P: [u64; 4] = [0xcba5e0bbd0000003, 0x789bb8d96d2c51b3, 0x28f0d123
 pub const U64_4P: [u64; 4] = [0x0f87d64fc0000004, 0xa0cfa121e6e5c245, 0xe14116da06056174, 0xc19139cb84c680a6];
 pub const U64_5P: [u64; 4] = [0x5369cbe3b0000005, 0xc903896a609f32d6, 0x99915c908786b9d1, 0xf1f5883e65f820d0];
 pub const U64_MU0: u64 = 0xc2e1f593efffffff;
+pub const U64_I1: [u64; 4] = [0x2d3e8053e396ee4d, 0xca478dbeab3c92cd, 0xb2d8f06f77f52a93, 0x24d6ba07f7aa8f04];
+pub const U64_I2: [u64; 4] = [0x18ee753c76f9dc6f, 0x54ad7e14a329e70f, 0x2b16366f4f7684df, 0x133100d71fdf3579];
 
 pub const U56_P: [u64; 5] = [0xe1f593f0000001, 0xe84879b9709143, 0xb68181585d2833, 0xe131a029b85045, 0x30644e72];
 pub const U56_MU0: u64 = 0xe1f593efffffff;
