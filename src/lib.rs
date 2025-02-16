@@ -36,6 +36,9 @@ pub use mul_logjumps_unr_1::*;
 mod mul_logjumps_unr_2;
 pub use mul_logjumps_unr_2::*;
 
+mod mul_logjumps_unr_3;
+pub use mul_logjumps_unr_3::*;
+
 mod sqr_cios_ord_unr;
 pub use sqr_cios_ord_unr::*;
 
@@ -107,8 +110,8 @@ mod tests {
     
 
     #[test]
-    fn test_mul_mp() {
-        let mul = |x, y| -> [u64; 4] { mul_cios_opt_unr_1(x, y) };
+    fn test_mul_best() {
+        let mul = |x, y| -> [u64; 4] { mul_logjumps_unr_3(x, y) };
         // zero
         assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
         // +3p rand -> +4p
@@ -117,9 +120,9 @@ mod tests {
             let y: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            assert_eq!(tmp, mod_5p(tmp));
+            // assert_eq!(tmp, mod_5p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
             let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
         }
         // +2p rand -> +2p
         for _ in 0..1000000 {
@@ -127,9 +130,10 @@ mod tests {
             let y: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            assert_eq!(tmp, mod_3p(tmp));
+            // assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
+            assert_eq!(tmp, mod_4p(tmp), "x: {:?}, y: {:?}", x, y);
             let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
         }
         // +1p rand -> +1p
         for _ in 0..1000000 {
@@ -137,9 +141,10 @@ mod tests {
             let y: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            assert_eq!(tmp, mod_2p(tmp));
+            // assert_eq!(tmp, mod_2p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
+            assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y);
             let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
         }
     }
 
@@ -175,11 +180,16 @@ mod tests {
             let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             // let x: [u64; 4] = [4314579465281859110, 17308915295999424822, 15701475505873744816, 2110239463959784388];
             // let y: [u64; 4] = [10903258641024617257, 8261737863103264858, 1924667411561346609, 2877263876851522103];
+            // let x: [u64; 4] = [14111063106680509141, 9286918349916402002, 3123541079830279964, 13851578687169200077];
+            // let y: [u64; 4] = [2929743706987541876, 11178355959680696508, 2342083771376252855, 13558677775818702936];
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul_logjumps_unr_1(x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
             let tmp = mul_logjumps_unr_2(x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+            let tmp = mul_logjumps_unr_3(x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
         }

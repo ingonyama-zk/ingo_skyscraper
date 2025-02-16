@@ -1,9 +1,8 @@
-// note: this version is limited to inputs < p
 use crate::constants::*;
 
 
 #[inline]
-pub fn mul_logjumps_unr_2(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
+pub fn mul_logjumps_unr_3(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
     // ab mults
     let (c00hi, c00lo) = mult(a[0], b[0]);
     let (c01hi, c01lo) = mult(a[0], b[1]);
@@ -27,53 +26,55 @@ pub fn mul_logjumps_unr_2(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
     let mut r1 = 0u128;
     let mut r2 = 0u128;
     let mut r3 = 0u128;
-    (r0, _) = wadd(c00hi, c00lo, r0, false);
-    (r0, c) = wadd(c01lo, 0u64 , r0, false);
-    (r1, _) = wadd(c11hi, c11lo, r1, c);
-    (r0, c) = wadd(c10lo, 0u64 , r0, false);
-    (r1, c) = wadd(c12lo, c01hi, r1, c);
-    (r2, _) = wadd(0u64 , c12hi, r2, c);
-    (r1, c) = wadd(c21lo, c10hi, r1, false);
-    (r2, _) = wadd(0u64 , c21hi, r2, c);
-    (r1, c) = wadd(c02hi, c02lo, r1, false);
-    (r2, c) = wadd(c13hi, c13lo, r2, c); // ignore c - limited to input < p
-    (r1, c) = wadd(c20hi, c20lo, r1, false);
-    (r2, c) = wadd(c31hi, c31lo, r2, c); // ignore c - limited to input < p
-    (r1, c) = wadd(c03lo, 0u64 , r1, false);
-    (r2, c) = wadd(c23lo, c03hi, r2, c);
-    (r3, _) = wadd(0u64 , c23hi, r3, c);
-    (r1, c) = wadd(c30lo, 0u64 , r1, false);
-    (r2, c) = wadd(c32lo, c30hi, r2, c);
-    (r3, _) = wadd(0u64 , c32hi, r3, c);
+    (r0, _) = wadd(c00hi, c00lo  , r0, false);
+    (r0, c) = wadd(c01lo, 0u64   , r0, false);
+    (r1, _) = wadd(c11hi, c11lo  , r1, c);
+    (r0, c) = wadd(c10lo, 0u64   , r0, false);
+    (r1, c) = wadd(c12lo, c01hi  , r1, c);
+    (r2, _) = wadd(0u64 , c12hi  , r2, c);
+    (r1, c) = wadd(c21lo, c10hi  , r1, false);
+    (r2, _) = wadd(0u64 , c21hi  , r2, c);
+    (r1, c) = wadd(c02hi, c02lo  , r1, false);
+    (r2, c) = wadd(c13hi, c13lo  , r2, c);
+    (r3, _) = wadd(0u64 , c23hi  , r3, c);
+    (r1, c) = wadd(c20hi, c20lo  , r1, false);
+    (r2, c) = wadd(c31hi, c31lo  , r2, c);
+    (r3, _) = wadd(0u64 , c32hi  , r3, c);
+    (r1, c) = wadd(c03lo, 0u64   , r1, false);
+    (r2, c) = wadd(c23lo, c03hi  , r2, c);
+    (r3, _) = wadd(c33hi, c33lo  , r3, c);
+    (r1, c) = wadd(c30lo, 0u64   , r1, false);
+    (r2, c) = wadd(c32lo, c30hi  , r2, c);
     // reduce by 128b (using inv method)
     let (r0hi, r0lo) = ((r0 >> 64) as u64, r0 as u64);
     let (ir000hi, ir000lo) = mult(r0lo, U64_I2[0]);
     let (ir001hi, ir001lo) = mult(r0lo, U64_I2[1]);
     let (ir002hi, ir002lo) = mult(r0lo, U64_I2[2]);
     let (ir003hi, ir003lo) = mult(r0lo, U64_I2[3]);
+    (r3, _) = wadd(0u64 , ir003hi, r3, c);
     let (ir010hi, ir010lo) = mult(r0hi, U64_I2[0]);
     let (ir011hi, ir011lo) = mult(r0hi, U64_I2[1]);
     let (ir012hi, ir012lo) = mult(r0hi, U64_I2[2]);
     let (ir013hi, ir013lo) = mult(r0hi, U64_I2[3]);
     (r1, c) = wadd(ir000hi, ir000lo, r1, false);
     (r2, c) = wadd(c22hi  , c22lo  , r2, c);
-    (r3, _) = wadd(c33hi  , c33lo  , r3, c);
+    (r3, _) = wadd(0u64   , ir012hi, r3, c);
     (r1, c) = wadd(ir001lo, 0u64   , r1, false);
     (r2, c) = wadd(ir002hi, ir002lo, r2, c);
-    (r3, _) = wadd(0u64   , ir003hi, r3, c);
+    (r3, _) = wadd(ir013hi, ir013lo, r3, c);
     (r1, c) = wadd(ir010lo, 0u64   , r1, false);
     (r2, c) = wadd(ir003lo, ir001hi, r2, c);
-    (r3, _) = wadd(0u64   , ir012hi, r3, c);
     // reduce by 64b (using inv method)
     let (r1hi, r1lo) = ((r1 >> 64) as u64, r1 as u64);
     let (ir100hi, ir100lo) = mult(r1lo, U64_I1[0]);
     let (ir101hi, ir101lo) = mult(r1lo, U64_I1[1]);
     let (ir102hi, ir102lo) = mult(r1lo, U64_I1[2]);
+    (r3, _) = wadd(0u64   , ir102hi, r3, c);
     let (ir103hi, ir103lo) = mult(r1lo, U64_I1[3]);
     let r1h: u64;
     (r1h, c) = r1hi.overflowing_add(ir100lo);
     (r2, c) = wadd(ir012lo, ir010hi, r2, c);
-    (r3, _) = wadd(ir013hi, ir013lo, r3, c);
+    (r3, _) = wadd(ir103hi, ir103lo, r3, c);
     // reduce by 64b (using mu0 method)
     let m = U64_MU0.wrapping_mul(r1h);
     let (m0hi, m0lo) = mult(m, U64_P[0]);
@@ -82,13 +83,13 @@ pub fn mul_logjumps_unr_2(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
     let (m3hi, m3lo) = mult(m, U64_P[3]);
     (_, c) = r1h.overflowing_add(m0lo);
     (r2, c) = wadd(ir011hi, ir011lo, r2, c);
-    (r3, _) = wadd(0u64   , ir102hi, r3, c);
-    (r2, c) = wadd(ir102lo, ir100hi, r2, false);
-    (r3, _) = wadd(ir103hi, ir103lo, r3, c);
-    (r2, c) = wadd(ir101hi, ir101lo, r2, false);
     (r3, _) = wadd(0u64   , m2hi   , r3, c);
-    (r2, c) = wadd(m2lo   , m0hi   , r2, false);
+    (r2, c) = wadd(ir102lo, ir100hi, r2, false);
     (r3, _) = wadd(m3hi   , m3lo   , r3, c);
+    (r2, c) = wadd(ir101hi, ir101lo, r2, false);
+    r3 = r3.wrapping_add(c as u128);    
+    (r2, c) = wadd(m2lo   , m0hi   , r2, false);
+    r3 = r3.wrapping_add(c as u128);    
     (r2, c) = wadd(m1hi   , m1lo   , r2, false);
     r3 = r3.wrapping_add(c as u128);    
     // return
