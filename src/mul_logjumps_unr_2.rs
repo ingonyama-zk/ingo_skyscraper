@@ -1,3 +1,4 @@
+// this version uses i1/i2 with daisy-chained carries and 128b additions
 // note: this version is limited to inputs < p
 use crate::constants::*;
 

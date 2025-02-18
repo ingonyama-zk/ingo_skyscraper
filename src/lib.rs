@@ -24,6 +24,9 @@ pub use mul_cios_opt::*;
 mod mul_cios_opt_unr_1;
 pub use mul_cios_opt_unr_1::*;
 
+mod mul_cios_opt_unr_2;
+pub use mul_cios_opt_unr_2::*;
+
 mod mul_vmp_cols_u56;
 pub use mul_vmp_cols_u56::*;
 
@@ -38,6 +41,12 @@ pub use mul_logjumps_unr_2::*;
 
 mod mul_logjumps_unr_3;
 pub use mul_logjumps_unr_3::*;
+
+mod mul_logjumps_unr_4;
+pub use mul_logjumps_unr_4::*;
+
+mod mul_logjumps_unr_5;
+pub use mul_logjumps_unr_5::*;
 
 mod sqr_cios_ord_unr;
 pub use sqr_cios_ord_unr::*;
