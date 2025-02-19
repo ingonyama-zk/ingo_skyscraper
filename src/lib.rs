@@ -18,6 +18,9 @@ pub use sqr_cios_opt_unr_2::*;
 mod sqr_cios_opt_unr_3;
 pub use sqr_cios_opt_unr_3::*;
 
+mod sqr_logjumps_unr_3;
+pub use sqr_logjumps_unr_3::*;
+
 mod mul_cios_opt;
 pub use mul_cios_opt::*;
 
@@ -205,7 +208,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sqr() {
+    fn test_sqr_cios_best() {
         let sqr = |x| -> [u64; 4] { sqr_cios_opt_unr_2(x) };
         // zero
         assert_eq!([0u64; 4], sqr([0u64; 4]));
@@ -254,6 +257,40 @@ mod tests {
             x = sqr(x);
             assert_eq!(x, mod_4p(x));
             let res_ = mod_p(x);
+            assert_eq!(ref_, res_);
+        }
+    }
+
+    #[test]
+    fn test_sqr_logjumps_best() {
+        let sqr = |x| -> [u64; 4] { sqr_logjumps_unr_3(x) };
+        // zero
+        assert_eq!([0u64; 4], sqr([0u64; 4]));
+        // +3p rand -> +5p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_sqr_ref(x);
+            let tmp = sqr(x);
+            // assert_eq!(tmp, mod_5p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+        // +2p rand -> +3p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_sqr_ref(x);
+            let tmp = sqr(x);
+            assert_eq!(tmp, mod_4p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+        // +1p rand -> +2p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_sqr_ref(x);
+            let tmp = sqr(x);
+            assert_eq!(tmp, mod_3p(tmp));
+            let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
         }
     }

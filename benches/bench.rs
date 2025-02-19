@@ -18,6 +18,7 @@ fn benchmark(c: &mut Criterion) {
     c.bench_function("mul_logjumps_unr_1", |b| b.iter(|| mul_logjumps_unr_1(black_box(x), black_box(y))));
     c.bench_function("mul_logjumps_unr_2", |b| b.iter(|| mul_logjumps_unr_2(black_box(x), black_box(y))));
     c.bench_function("mul_logjumps_unr_3", |b| b.iter(|| mul_logjumps_unr_3(black_box(x), black_box(y))));
+    c.bench_function("sqr_logjumps_unr_3", |b| b.iter(|| sqr_logjumps_unr_3(black_box(x))));
     c.bench_function("mul_logjumps_unr_4", |b| b.iter(|| mul_logjumps_unr_4(black_box(x), black_box(y))));
     c.bench_function("mul_logjumps_unr_5", |b| b.iter(|| mul_logjumps_unr_5(black_box(x), black_box(y))));
     // c.bench_function("mul_vmp_cols_u56", |b| b.iter(|| mul_vmp_cols_u56(black_box(x), black_box(y))));
