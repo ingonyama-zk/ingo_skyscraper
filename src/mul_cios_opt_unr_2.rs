@@ -1,4 +1,4 @@
-// unrolled version of acar cios with 64b additions only
+// unrolled acar cios with daisy-chained carries and 64b additions only
 use crate::constants::*;
 
 

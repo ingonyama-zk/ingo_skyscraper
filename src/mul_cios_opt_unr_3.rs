@@ -3,24 +3,24 @@ use crate::constants::*;
 
 
 #[inline]
-pub fn sqr_cios_opt_unr_3(a: [u64; 4]) -> [u64; 4] {
+pub fn mul_cios_opt_unr_3(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
 
-    let (c00hi, c00lo) = mult(a[0], a[0]);
-    let (c01hi, c01lo) = mult(a[0], a[1]);
-    let (c02hi, c02lo) = mult(a[0], a[2]);
-    let (c03hi, c03lo) = mult(a[0], a[3]);
-    let (c10hi, c10lo) = (c01hi, c01lo);
-    let (c11hi, c11lo) = mult(a[1], a[1]);
-    let (c12hi, c12lo) = mult(a[1], a[2]);
-    let (c13hi, c13lo) = mult(a[1], a[3]);
-    let (c20hi, c20lo) = (c02hi, c02lo);
-    let (c21hi, c21lo) = (c12hi, c12lo);
-    let (c22hi, c22lo) = mult(a[2], a[2]);
-    let (c23hi, c23lo) = mult(a[2], a[3]);
-    let (c30hi, c30lo) = (c03hi, c03lo);
-    let (c31hi, c31lo) = (c13hi, c13lo);
-    let (c32hi, c32lo) = (c23hi, c23lo);
-    let (c33hi, c33lo) = mult(a[3], a[3]);
+    let (c00hi, c00lo) = mult(a[0], b[0]);
+    let (c01hi, c01lo) = mult(a[0], b[1]);
+    let (c02hi, c02lo) = mult(a[0], b[2]);
+    let (c03hi, c03lo) = mult(a[0], b[3]);
+    let (c10hi, c10lo) = mult(a[1], b[0]);
+    let (c11hi, c11lo) = mult(a[1], b[1]);
+    let (c12hi, c12lo) = mult(a[1], b[2]);
+    let (c13hi, c13lo) = mult(a[1], b[3]);
+    let (c20hi, c20lo) = mult(a[2], b[0]);
+    let (c21hi, c21lo) = mult(a[2], b[1]);
+    let (c22hi, c22lo) = mult(a[2], b[2]);
+    let (c23hi, c23lo) = mult(a[2], b[3]);
+    let (c30hi, c30lo) = mult(a[3], b[0]);
+    let (c31hi, c31lo) = mult(a[3], b[1]);
+    let (c32hi, c32lo) = mult(a[3], b[2]);
+    let (c33hi, c33lo) = mult(a[3], b[3]);
 
     let mut c: bool;
     let mut r0 = 0u128;

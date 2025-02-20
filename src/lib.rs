@@ -15,8 +15,14 @@ pub use sqr_cios_opt_unr_1::*;
 mod sqr_cios_opt_unr_2;
 pub use sqr_cios_opt_unr_2::*;
 
+mod sqr_cios_opt_unr_2a;
+pub use sqr_cios_opt_unr_2a::*;
+
 mod sqr_cios_opt_unr_3;
 pub use sqr_cios_opt_unr_3::*;
+
+mod sqr_logjumps_unr_2;
+pub use sqr_logjumps_unr_2::*;
 
 mod sqr_logjumps_unr_3;
 pub use sqr_logjumps_unr_3::*;
@@ -29,6 +35,9 @@ pub use mul_cios_opt_unr_1::*;
 
 mod mul_cios_opt_unr_2;
 pub use mul_cios_opt_unr_2::*;
+
+mod mul_cios_opt_unr_3;
+pub use mul_cios_opt_unr_3::*;
 
 mod mul_vmp_cols_u56;
 pub use mul_vmp_cols_u56::*;
@@ -59,6 +68,9 @@ pub use bar::*;
 
 mod compress;
 pub use compress::*;
+
+// mod compress_logjumps;
+// pub use compress_logjumps::*;
 
 
 #[cfg(test)]
@@ -122,8 +134,8 @@ mod tests {
     
 
     #[test]
-    fn test_mul_best() {
-        let mul = |x, y| -> [u64; 4] { mul_logjumps_unr_3(x, y) };
+    fn test_mul_cios_best() {
+        let mul = |x, y| -> [u64; 4] { mul_cios_opt_unr_3(x, y) };
         // zero
         assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
         // +3p rand -> +4p
@@ -132,7 +144,7 @@ mod tests {
             let y: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            // assert_eq!(tmp, mod_5p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
+            assert_eq!(tmp, mod_5p(tmp), "x: {:?}, y: {:?}", x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
         }
@@ -142,7 +154,42 @@ mod tests {
             let y: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            // assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
+            assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
+        }
+        // +1p rand -> +1p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            assert_eq!(tmp, mod_2p(tmp), "x: {:?}, y: {:?}", x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
+        }
+    }
+
+    #[test]
+    fn test_mul_logjumps_best() {
+        let mul = |x, y| -> [u64; 4] { mul_logjumps_unr_3(x, y) };
+        // zero
+        assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
+        // +3p rand -> +4p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_4p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
+        }
+        // +2p rand -> +2p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_3p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
             assert_eq!(tmp, mod_4p(tmp), "x: {:?}, y: {:?}", x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
@@ -153,7 +200,16 @@ mod tests {
             let y: [u64; 4] = mod_2p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let ref_ = calc_mul_ref(x, y);
             let tmp = mul(x, y);
-            // assert_eq!(tmp, mod_2p(tmp), "x: {:?}, y: {:?}", x, y); // works for cios_opt_unr_1
+            assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
+        }
+        // +0p rand -> +0p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
             assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y);
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
@@ -161,7 +217,24 @@ mod tests {
     }
 
     #[test]
-    fn test_mul_vmp() {
+    fn test_mul_logjumps_2() {
+        let mul = |x, y| -> [u64; 4] { mul_logjumps_unr_2(x, y) };
+        // zero
+        assert_eq!([0u64; 4], mul([0u64; 4], [0u64; 4]));
+        // +0p rand -> +0p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_mul_ref(x, y);
+            let tmp = mul(x, y);
+            assert_eq!(tmp, mod_3p(tmp), "x: {:?}, y: {:?}", x, y);
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_, "x: {:?}, y: {:?}", x, y);
+        }
+    }
+
+    #[test]
+    fn test_mul_vmp_cols() {
         // zero
         assert_eq!([0u64; 4], mul_vmp_cols_u56([0u64; 4], [0u64; 4]));
         assert_eq!([0u64; 4], mul_vmp_cols_u63([0u64; 4], [0u64; 4]));
@@ -182,34 +255,8 @@ mod tests {
     }
 
     #[test]
-    fn test_mul_logjumps() {
-        // zero
-        assert_eq!([0u64; 4], mul_logjumps_unr_1([0u64; 4], [0u64; 4]));
-        assert_eq!([0u64; 4], mul_logjumps_unr_2([0u64; 4], [0u64; 4]));
-        // random
-        for _ in 0..1000000 {
-            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
-            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
-            // let x: [u64; 4] = [4314579465281859110, 17308915295999424822, 15701475505873744816, 2110239463959784388];
-            // let y: [u64; 4] = [10903258641024617257, 8261737863103264858, 1924667411561346609, 2877263876851522103];
-            // let x: [u64; 4] = [14111063106680509141, 9286918349916402002, 3123541079830279964, 13851578687169200077];
-            // let y: [u64; 4] = [2929743706987541876, 11178355959680696508, 2342083771376252855, 13558677775818702936];
-            let ref_ = calc_mul_ref(x, y);
-            let tmp = mul_logjumps_unr_1(x, y);
-            let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
-            let tmp = mul_logjumps_unr_2(x, y);
-            let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
-            let tmp = mul_logjumps_unr_3(x, y);
-            let res_ = mod_p(tmp);
-            assert_eq!(ref_, res_);
-        }
-    }
-
-    #[test]
     fn test_sqr_cios_best() {
-        let sqr = |x| -> [u64; 4] { sqr_cios_opt_unr_2(x) };
+        let sqr = |x| -> [u64; 4] { sqr_cios_opt_unr_3(x) };
         // zero
         assert_eq!([0u64; 4], sqr([0u64; 4]));
         // +3p rand -> +4p
@@ -293,6 +340,31 @@ mod tests {
             let res_ = mod_p(tmp);
             assert_eq!(ref_, res_);
         }
+        // +0p rand -> +1p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_sqr_ref(x);
+            let tmp = sqr(x);
+            assert_eq!(tmp, mod_3p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
+    }
+
+    #[test]
+    fn test_sqr_logjumps_2() {
+        let sqr = |x| -> [u64; 4] { sqr_logjumps_unr_2(x) };
+        // zero
+        assert_eq!([0u64; 4], sqr([0u64; 4]));
+        // +0p rand -> +1p
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let ref_ = calc_sqr_ref(x);
+            let tmp = sqr(x);
+            assert_eq!(tmp, mod_3p(tmp));
+            let res_ = mod_p(tmp);
+            assert_eq!(ref_, res_);
+        }
     }
 
     #[test]
@@ -335,7 +407,7 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn test_bar_dynamics_should_fail() { // this test needs to always fail
+    fn test_bar_dynamics_should_fail() {
         for _ in 0..100 {
             let x = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let y = bar_u8(x);
@@ -346,17 +418,51 @@ mod tests {
     #[test]
     fn test_compress() {
         // correctness
-        assert_eq!(compress([222647740394868259, 1954084163509096643, 7169380306955695398, 3443405857474191768],
+        assert_eq!(compress_cios_opt_1([222647740394868259, 1954084163509096643, 7169380306955695398, 3443405857474191768],
                             [650100192727553127, 2847352847332889852, 4016598436723263545, 1563325641941659433]), 
                             [18095061023341165257, 7738479748118643198, 13857889271559191300, 570841294491851342]);
         // dynamics
         let x = [0u64; 4];
-        let tmp = compress(x, x);
+        let _tmp = compress_cios_opt_1(x, x);
         for _ in 0..1000000 {
             let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
             // println!("{:?}", (x,y));
-            let tmp = compress(x, y);
+            let _tmp = compress_cios_opt_1(x, y);
+        }
+    }
+
+    #[test]
+    fn test_compress_logjumps_1() {
+        // correctness
+        assert_eq!(compress_logjumps_1([222647740394868259, 1954084163509096643, 7169380306955695398, 3443405857474191768],
+                            [650100192727553127, 2847352847332889852, 4016598436723263545, 1563325641941659433]), 
+                            [18095061023341165257, 7738479748118643198, 13857889271559191300, 570841294491851342]);
+        // dynamics
+        let x = [0u64; 4];
+        let _tmp = compress_logjumps_1(x, x);
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            // println!("{:?}", (x,y));
+            let _tmp = compress_logjumps_1(x, y);
+        }
+    }
+
+    #[test]
+    fn test_compress_logjumps_2() {
+        // correctness
+        assert_eq!(compress_logjumps_2([222647740394868259, 1954084163509096643, 7169380306955695398, 3443405857474191768],
+                            [650100192727553127, 2847352847332889852, 4016598436723263545, 1563325641941659433]), 
+                            [18095061023341165257, 7738479748118643198, 13857889271559191300, 570841294491851342]);
+        // dynamics
+        let x = [0u64; 4];
+        let _tmp = compress_logjumps_2(x, x);
+        for _ in 0..1000000 {
+            let x: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            let y: [u64; 4] = mod_p([rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>(), rand::random::<u64>()]);
+            // println!("{:?}", (x,y));
+            let _tmp = compress_logjumps_1(x, y);
         }
     }
 }

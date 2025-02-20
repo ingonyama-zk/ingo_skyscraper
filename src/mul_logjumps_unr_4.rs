@@ -1,10 +1,10 @@
-// this version uses i1 only with daisy-chained carries and 128b additions
+// unrolled logjumps using i1 only with daisy-chained carries and 128b additions
 use crate::constants::*;
 
 
 #[inline]
 pub fn mul_logjumps_unr_4(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
-    // ab mults
+
     let (c00hi, c00lo) = mult(a[0], b[0]);
     let (c01hi, c01lo) = mult(a[0], b[1]);
     let (c02hi, c02lo) = mult(a[0], b[2]);

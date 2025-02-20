@@ -1,9 +1,10 @@
 // unrolled logjumps using i1/i2 with daisy-chained carries and 128b additions
+// note: this version is limited to inputs < p
 use crate::constants::*;
 
 
 #[inline]
-pub fn sqr_logjumps_unr_3(a: [u64; 4]) -> [u64; 4] {
+pub fn sqr_logjumps_unr_2(a: [u64; 4]) -> [u64; 4] {
 
     let (c00hi, c00lo) = mult(a[0], a[0]);
     let (c01hi, c01lo) = mult(a[0], a[1]);
@@ -41,16 +42,18 @@ pub fn sqr_logjumps_unr_3(a: [u64; 4]) -> [u64; 4] {
     (r2, _) = wadd(0u64 , c21hi, r2, c);
 
     (r1, c) = wadd(c02hi, c02lo, r1, false);
-    (r2, c) = wadd(c13hi, c13lo, r2, c);
-    (r3, _) = wadd(0u64 , c23hi, r3, c);
-  
+    (r2, c) = wadd(c13hi, c13lo, r2, c); // ignore c - limited to input < p
+
     (r1, c) = wadd(c20hi, c20lo, r1, false);
-    (r2, c) = wadd(c31hi, c31lo, r2, c);
-    (r3, _) = wadd(0u64 , c32hi, r3, c);
+    (r2, c) = wadd(c31hi, c31lo, r2, c); // ignore c - limited to input < p
 
     (r1, c) = wadd(c03lo, 0u64 , r1, false);
     (r2, c) = wadd(c23lo, c03hi, r2, c);
-    (r3, _) = wadd(c33hi, c33lo, r3, c);
+    (r3, _) = wadd(0u64 , c23hi, r3, c);
+
+    (r1, c) = wadd(c30lo, 0u64 , r1, false);
+    (r2, c) = wadd(c32lo, c30hi, r2, c);
+    (r3, _) = wadd(0u64 , c32hi, r3, c);
 
     let (r0hi, r0lo) = ((r0 >> 64) as u64, r0 as u64);
     let (ir000hi, ir000lo) = mult(r0lo, U64_I2[0]);
@@ -62,21 +65,17 @@ pub fn sqr_logjumps_unr_3(a: [u64; 4]) -> [u64; 4] {
     let (ir012hi, ir012lo) = mult(r0hi, U64_I2[2]);
     let (ir013hi, ir013lo) = mult(r0hi, U64_I2[3]);
 
-    (r1, c) = wadd(c30lo, 0u64   , r1, false);
-    (r2, c) = wadd(c32lo, c30hi  , r2, c);
-    (r3, _) = wadd(0u64 , ir003hi, r3, c);
-
     (r1, c) = wadd(ir000hi, ir000lo, r1, false);
     (r2, c) = wadd(c22hi  , c22lo  , r2, c);
-    (r3, _) = wadd(0u64   , ir012hi, r3, c);
+    (r3, _) = wadd(c33hi  , c33lo  , r3, c);
 
     (r1, c) = wadd(ir001lo, 0u64   , r1, false);
     (r2, c) = wadd(ir002hi, ir002lo, r2, c);
-    (r3, _) = wadd(ir013hi, ir013lo, r3, c);
+    (r3, _) = wadd(0u64   , ir003hi, r3, c);
 
     (r1, c) = wadd(ir010lo, 0u64   , r1, false);
     (r2, c) = wadd(ir003lo, ir001hi, r2, c);
-    (r3, _) = wadd(0u64   , 0u64   , r3, c);    
+    (r3, _) = wadd(0u64   , ir012hi, r3, c);
 
     let r1lo = r1 as u64;
     let (ir100hi, ir100lo) = mult(r1lo, U64_I1[0]);
@@ -86,7 +85,7 @@ pub fn sqr_logjumps_unr_3(a: [u64; 4]) -> [u64; 4] {
 
     (r1, c) = wadd(ir100lo, 0u64   , r1, false);
     (r2, c) = wadd(ir012lo, ir010hi, r2, c);
-    (r3, _) = wadd(0u64   , ir102hi, r3, c);
+    (r3, _) = wadd(ir013hi, ir013lo, r3, c);
 
     let m = U64_MU0.wrapping_mul((r1 >> 64) as u64);
     let (m0hi, m0lo) = mult(m, U64_P[0]);
@@ -96,19 +95,19 @@ pub fn sqr_logjumps_unr_3(a: [u64; 4]) -> [u64; 4] {
 
     (_ , c) = wadd(m0lo   , 0u64   , r1, false);
     (r2, c) = wadd(ir011hi, ir011lo, r2, c);
-    (r3, _) = wadd(ir103hi, ir103lo, r3, c);
+    (r3, _) = wadd(0u64   , ir102hi, r3, c);
 
     (r2, c) = wadd(ir102lo, ir100hi, r2, false);
-    (r3, _) = wadd(0u64   , m2hi   , r3, c);
+    (r3, _) = wadd(ir103hi, ir103lo, r3, c);
 
     (r2, c) = wadd(ir101hi, ir101lo, r2, false);
+    (r3, _) = wadd(0u64   , m2hi   , r3, c);
+
+    (r2, c) = wadd(m2lo   , m0hi   , r2, false);
     (r3, _) = wadd(m3hi   , m3lo   , r3, c);
 
-    (r2, c) = wadd(m2lo, m0hi, r2, false);
-    (r3, _) = wadd(0u64, 0u64, r3, c);    
-
-    (r2, c) = wadd(m1hi, m1lo, r2, false);
-    (r3, _) = wadd(0u64, 0u64, r3, c);    
+    (r2, c) = wadd(m1hi   , m1lo   , r2, false);
+    (r3, _) = wadd(0u64, 0u64, r3, c);     
 
     // return
     [r2 as u64, (r2 >> 64) as u64, r3 as u64, (r3 >> 64) as u64]

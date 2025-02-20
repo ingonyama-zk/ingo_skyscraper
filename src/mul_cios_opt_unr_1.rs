@@ -1,4 +1,4 @@
-// unrolled version of acar cios
+// unrolled acar cios with 2 temp registers car1, car2
 use crate::constants::*;
 
 
